@@ -23,9 +23,9 @@ print('feature: ',features[0],'\nlabel: ',labels[0])
 print(len(features))
 
 
-d2l.set_figsize()
-d2l.plt.plot(features[:,1].detach().numpy(),
-             labels.detach().numpy(),1)
+#d2l.set_figsize()
+#d2l.plt.plot(features[:,1].detach().numpy(),
+ #            labels.detach().numpy(),1)
 #d2l.plt.show()  # 添加这一行来显示图片
 
 

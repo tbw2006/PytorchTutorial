@@ -18,9 +18,9 @@ def get_data_fashion_mnist(batch_size = 32,resize = None):
         root=r'I:\Data\MNIST',train=False,
         transform=trans,download=True
     )
-    print(len(train_set))
-    print(len(test_set))
-    print(test_set[0][0].shape)
+    #print(len(train_set))
+    #print(len(test_set))
+    #print(test_set[0][0].shape)
 
     
     return (data.DataLoader(dataset=train_set,batch_size=batch_size,
@@ -49,10 +49,10 @@ def softmax(x):
     partition = exp_x.sum(dim=1,keepdim=True)
     return exp_x / partition
 #测试一下
-x = torch.normal(0,0.1,(2,5))
+'''x = torch.normal(0,0.1,(2,5))
 x = softmax(x)
 print(x)
-print(x.sum(1))
+print(x.sum(1))'''
 
 
 def net(x):
