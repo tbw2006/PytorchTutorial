@@ -109,12 +109,12 @@ def train(train_features,test_features,train_labels,test_labels,num_epochs):
 #1.正常的
 
 train(poly_features[:num_train,:4],poly_features[num_train:,:4],
-labels[:num_train],labels[num_train:],1000)
+labels[:num_train],labels[num_train:],400)
 
 #2.太少了
 '''
 train(poly_features[:num_train,:2],poly_features[num_train:,:2],
-labels[:num_train],labels[num_train:],1000)
+labels[:num_train],labels[num_train:],400)
 '''
 #3.太多了
 '''
