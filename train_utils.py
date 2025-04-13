@@ -3,6 +3,7 @@ import torchvision
 from torchvision import transforms
 from torch.utils import data
 from d2l import torch as d2l
+import random
 
 def get_data_fashion_mnist(batch_size = 32,resize = None):
 
@@ -85,6 +86,7 @@ def train_epoch(net,updater,criterion,train_iter,params):
             metric.add(loss.sum().item(),accuracy(y_hat,y),len(y))
 
         else:
+            updater.grad.zero_()
             loss.sum().backward()#只有标量才能反向传播
             updater(params)
             metric.add(loss.sum().item(),accuracy(y_hat,y),len(y))
@@ -93,8 +95,8 @@ def train_epoch(net,updater,criterion,train_iter,params):
 
 
 
-def sgd(params,lr = 0.03,batch_size = 32):
-    def updater(_):
+def sgd():
+    def updater(params,lr = 0.03,batch_size = 32):
         with torch.no_grad():
             for param in params:
                 if param.grad is not None:
@@ -118,3 +120,43 @@ updater=None,num_epochs=10,params=None,lr = 0.03,criterion=cross_entropy):
             print(f"w2范围: min={params[2].min().item():.4f}, max={params[2].max().item():.4f}")
         print(f'epoch: {epoch+1} , loss: {loss:.4f}' )
         print(f'train_accuracy: {train_accuracy:.4f} , test_accuracy: {test_accuracy}')
+
+
+
+def synthetic_data(w,b,num_samples):
+    x = torch.normal(0,1,(num_samples,len(w)))
+    y = torch.matmul(x,w)+b
+    y += torch.normal(0,0.01,y.shape)#加上一点噪声
+    return x , y.reshape(-1,1)        #y要转换成列向量
+
+
+
+def data_iter(features,labels,batch_size):
+    num_samples = len(features)
+    indices = list(range(num_samples))
+    random.shuffle(indices)
+    for idx in range(0,num_samples,batch_size):
+        batch_indices = torch.tensor(indices[idx:min(idx + batch_size,num_samples)])
+        
+        yield features[batch_indices],labels[batch_indices]
+
+
+
+def linreg(x,w,b):
+    return torch.matmul(x,w) + b
+
+
+
+def squared_loss(y_hat,y):
+    return (y_hat - y.reshape(y_hat.shape)) ** 2 * 0.5
+
+
+def return_weight_decay(w):
+    return torch.sum(w**2) / 2
+
+
+def weight_decay_criterion():
+    def mixed_criterion(lambd,w,y,y_hat,criterion = cross_entropy):
+        
+        return criterion(y,y_hat) + lambd * return_weight_decay(w)
+    return mixed_criterion
