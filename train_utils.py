@@ -4,6 +4,8 @@ from torchvision import transforms
 from torch.utils import data
 from d2l import torch as d2l
 import random
+import matplotlib.pyplot as plt
+
 
 def get_data_fashion_mnist(batch_size = 32,resize = None):
 
@@ -81,7 +83,7 @@ def train_epoch(net,updater,criterion,train_iter,params):
         if isinstance(updater,torch.optim.Optimizer):
             updater.zero_grad()
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(params,max_norm=10.0)
+            torch.nn.utils.clip_grad_norm_(net.parameters(),max_norm=10.0)
             updater.step()
             metric.add(loss.sum().item(),accuracy(y_hat,y),len(y))
 
@@ -112,6 +114,9 @@ def train(net,train_iter,test_iter,
 updater=None,num_epochs=10,params=None,lr = 0.03,criterion=cross_entropy):
     if updater is None and params is not None:
         updater = sgd(params=params,lr=lr)
+
+    animator = d2l.Animator(xlabel="epoch",ylabel = "loss",yscale='linear',
+    xlim=[1,num_epochs],ylim=[0.01,1],legend=['loss','train_acc','test_acc'])
     for epoch in range(num_epochs):
         loss , train_accuracy = train_epoch(net,updater,criterion,train_iter,params)
         test_accuracy = evaluate_accuracy(net,test_iter)
@@ -120,7 +125,9 @@ updater=None,num_epochs=10,params=None,lr = 0.03,criterion=cross_entropy):
             print(f"w2范围: min={params[2].min().item():.4f}, max={params[2].max().item():.4f}")
         print(f'epoch: {epoch+1} , loss: {loss:.4f}' )
         print(f'train_accuracy: {train_accuracy:.4f} , test_accuracy: {test_accuracy}')
-
+        if (epoch+1)%2==0 or epoch==0:
+            animator.add(epoch+1,[loss,train_accuracy,test_accuracy])
+            plt.pause(0.1)  # 暂停一小段时间以更新图形
 
 
 def synthetic_data(w,b,num_samples):
