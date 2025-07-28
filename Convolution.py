@@ -1,4 +1,6 @@
+from calendar import c
 from turtle import forward
+from pyparsing import srange
 import torch
 from torch import nn as nn
 from d2l import torch as d2l
@@ -23,20 +25,34 @@ class Conv2D(nn.Module):
     def forward(self,x):
         return corr2d(x,self.weight) + self.bias
 
-X = torch.ones(6,8)
-X[:,2:6] = 0
-print(X)
+def comp_conv2d(conv2d,x):
+    x = x.reshape((1,1) + x.shape)
+    Y = conv2d(x)
+    return Y.reshape(Y.shape[2:])
 
-K = torch.tensor([[1.0,-1.0]])
-Y = corr2d(X,K)
-print(Y)
-print(corr2d(X.t(),K))
+conv2d = nn.Conv2d(1,1,kernel_size=3,padding=1)
+x = torch.rand(size = (8,8))
+print(comp_conv2d(conv2d,x).shape)
+conv2d = nn.Conv2d(1,1,kernel_size=(5,3),padding=(2,1))
+print(comp_conv2d(conv2d,x).shape)
+conv2d = nn.Conv2d(1,1,kernel_size=3,padding=1,stride=2)
+print(comp_conv2d(conv2d,x).shape)
+conv2d = nn.Conv2d(1,1,kernel_size=(3,5),padding=(1,2),stride=2)
+print(comp_conv2d(conv2d,x).shape)
+#X = torch.ones(6,8)
+#X[:,2:6] = 0
+#print(X)
 
-conv2d = nn.Conv2d(1,1,kernel_size=(1,2),bias  = False)
+#K = torch.tensor([[1.0,-1.0]])
+#Y = corr2d(X,K)
+#print(Y)
+#print(corr2d(X.t(),K))
 
-X = X.reshape((1,1,6,8))
-Y = Y.reshape(1,1,6,7)  # also okay
+#conv2d = nn.Conv2d(1,1,kernel_size=(1,2),bias  = False)
 
+#X = X.reshape((1,1,6,8))
+#Y = Y.reshape(1,1,6,7)  # also okay
+'''
 for i in range(50):
     Y_hat = conv2d(X)
     l = (Y_hat - Y)**2
@@ -45,6 +61,6 @@ for i in range(50):
     conv2d.weight.data -= 3e-2 * conv2d.weight.grad
     if (i+1) % 2 == 0:
         print(f'batch {i+1}: loss {l.sum():.3f}')
-
-print(conv2d.weight.data)
+'''
+#print(conv2d.weight.data)
 
