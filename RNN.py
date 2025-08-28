@@ -125,10 +125,10 @@ def rnn(inputs, state, params):
     W_xh, W_hh, b_h, W_hq, b_q = params
     H, = state
     outputs = []
-    for X in inputs:
+    for X in inputs: #X: (batch_size, vocab_size)
         H = torch.tanh(torch.mm(X, W_xh) + torch.mm(H, W_hh) + b_h)
-        Y = torch.mm(H, W_hq) + b_q
-        output.append(Y)
+        Y = torch.mm(H, W_hq) + b_q #Y: (batch_size, num_hiddens)
+        output.append(Y)        # out: (batch_size * num_steps, num_hiddens)
     return torch.cat(output, dim=0), (H, )
 
 #
